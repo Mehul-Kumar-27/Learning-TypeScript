@@ -1,26 +1,19 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from "express";
-import NoteModel from "./notes";
+import notesRoutes from "./routes/notes_routes"
+import morgan from "morgan";
 
 const app = express();
+app.use(morgan("dev"));
+app.use(express.json());
 
-app.get("/", async (req, res, next) => {
-    try {
-
-        const notes = await NoteModel.find().exec();
-        res.status(200).json(notes);
-    } catch (error) {
-
-        next(error);
-
-    }
-
-});
+app.use("/api/notes", notesRoutes)
 
 app.use((req, res, next) => {
     next(Error("Route Not Found"));
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((error: unknown, req: Request, res: Response, nest: NextFunction) => {
     console.error(error);
     let errorMessage = "Unknown error occured";
